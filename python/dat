@@ -1,0 +1,9 @@
+16	# MMr or Mr (see Node Count Type) (int)
+16	# MMz or Mz (see Node Count Type) (int)
+1.0	# tEND
+1.0	# dtOUT
+0.90	# factor
+1.0	# RIn
+2.0	# ROut
+1.0	# D
+False	# Node Count Type: 'True' if you want MMz/MMr. 'False' if you want Mz/Mr. (Case Sensitive)

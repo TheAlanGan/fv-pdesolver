@@ -82,33 +82,21 @@ def WORKER(nWRs, myID):
     for nsteps in range(1, MaxSteps + 1):
 
         MPI.COMM_WORLD.Barrier()
-#        if ((Me == 3) or (nWRs == 1)):
-#            print '\n', U, '**BEFORE EXCHANGE** at time ', time, ' from worker ', Me, '\n'
-
 
         U = ms.EXCHANGE_bry_MPI(nWRs, Me, NodeUP, NodeDN, Mr, Mz, U)
 
         """_____THE UPDATING_____"""
         # Need to update time first b/c Boundary Conditions are time dependant
-#        if ((Me == 3) or (nWRs == 1)):
-#            print '\n', U, '**BEFORE UPDATE** at time ', time, ' from worker ', Me, '\n'
-
         time = nsteps * dt
         U, Fr, Fz = update.FLUX(RIn, ROut, ZIn, ZOut, R, Z, D, dr, dz, Mr, Mz, Fr, Fz, U, time, Me, nWRs)
         U = update.PDE(ZIn, ZOut, R, Z, Ar, Az, dr, dz, Mr, Mz, dt, Fr, Fz, U, time, Me, nWRs)
-
-#        print '\n', U, 'AFTER UPDATE at time ', time, ' from worker ', Me, '\n'
 
         """_____END OF UPDATING_____"""
 
 
         """_____SENDING DATA TO MASTER_____"""
         if (time >= dtout):    #if time >= tout: #outputs according to Tout
-#            print '\n', U, 'BEFORE SEND FROM WORKER ', Me
             ms.SEND_output_MPI(Me, NodeUP, NodeDN, Mr, Mz, U)
-#            if Me == 3:
-#                print '\n', U[1,4], "*********************************\n"
-
             tout = tout + dtout
         """_____END OF SENDING_____"""
 

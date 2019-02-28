@@ -20,11 +20,6 @@ import numpy as np
 #==========================================================================
 def RECV_output_MPI(nWRs, Mr, Mz, U):
 
-#    h = MPI.INT.Create_contiguous(x2)
-#    MPI.INT.Commit()
-#    h.Commit()   # might be this not entirely sure
-
-#    x2 = M + 2
     localMz = Mz/nWRs
     collectiveU = np.zeros((Mz+2, Mr+2)) # The U array that contains the entire system
 
@@ -37,13 +32,9 @@ def RECV_output_MPI(nWRs, Mr, Mz, U):
     """
     for i in range (1, nWRs + 1):
         buff = np.zeros((localMz + 2, Mr+2))  # buff is the memory buffer for the recieving array
-#        Jme = (i-1)*M + 1    # Not sure what JME is for... ask prof
+
         msgtag = 1000 + i
         MPI.COMM_WORLD.Recv(buff, source = i, tag = msgtag )
-#        print buff, "RECIEVED FROM ", i, '\n'
-
-#        if i == 2:
-#            print buff, "*****BEFORE DELETING"
 
         if (i != 1 and i!= nWRs): # If middle parts of mesh, deletes boundary values (top and bott)
             buff = np.delete(buff, [0,localMz+1], 0 )
@@ -60,8 +51,6 @@ def RECV_output_MPI(nWRs, Mr, Mz, U):
     """ END of the section referred to in the above comment.
     """
 
-#    h.Free()
-#    print collectiveU, "AFTER BEING PUT TOGETHER"
     return collectiveU
 
 #===========================================================================
@@ -72,18 +61,10 @@ def SEND_output_MPI(Me, NodeUP, NodeDN, Mr, Mz, U):
         master for output. Note: the master sorts out the boundaries.
     """
 
-#    x2 = M + 2     # Size of local_U arrays
-
-#    h = MPI.INT.Create_contiguous(x2) # Not sure what h is, but it works
-#    MPI.INT.Commit()
-#    h.Commit()    # Might be this, not sure.
-
     mster = 0
     msgtag = 1000 + Me
 
     MPI.COMM_WORLD.Send(U, dest = mster, tag = msgtag)
-
-#    h.Free() # h is from the Create_contiguous... not sure why this runs
 
     return
 
@@ -92,13 +73,10 @@ def SEND_output_MPI(Me, NodeUP, NodeDN, Mr, Mz, U):
 def EXCHANGE_bry_MPI(nWRs, Me, NodeUP, NodeDN, Mr, Mz, U):
 
     h = MPI.DOUBLE.Create_contiguous(Mr+2)
-    h.Commit()   # might be this not entirely sure
+    h.Commit()   # Creating the memory buffer needed to send/recieve arrays
 
-#    Jup = M   # Note: M here is the local M for each process
-#    Jupl = Jup + 1
     msgUP = 10
     msgDN = 20
-#    I2 = M + 2
 
     if (Me != 1):# Send bottom row to neighbor down
         msgtag = msgUP
@@ -119,11 +97,8 @@ def EXCHANGE_bry_MPI(nWRs, Me, NodeUP, NodeDN, Mr, Mz, U):
         msgtag = msgDN
         MPI.COMM_WORLD.Recv( [U[0,:], h] , source = NodeDN, tag = msgtag) #NodeLEFT, msgtag
 
-    h.Free()
+    h.Free() # Frees the memory buffer
 
     return U
-
-
-
 
 

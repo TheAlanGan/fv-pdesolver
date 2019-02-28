@@ -84,7 +84,7 @@ def MASTER(nWRs, myID):
     # Sets up Flux Arrays and Initial Conditions in U array (So the master can output)
     U, Fr, Fz = setup.INIT(time, R, Z, Mr, Mz)        # Initiates the U and F arrays
     """_____END OF INITIALIZATION_____"""
-#    U = np.zeros((Mz+2, Mr+2))
+    
 
     U = ms.RECV_output_MPI(nWRs, Mr, Mz, U)
     ERRmax = io.COMPARE(D, Mr, Mz, 0, 0, output, R, Z, U) # For debugging
@@ -105,7 +105,7 @@ def MASTER(nWRs, myID):
             output = outputName + str(numOut) + outputExtension # The name of output file (each time is different)
 
             U = ms.RECV_output_MPI(nWRs, Mr, Mz, U)
-#            print '\n', U, 'MASTER AFTER RECIEVING\n'
+
             ERRmax = io.COMPARE(D, Mr, Mz, nsteps, time, output, R, Z, U) # For debugging
             tout = tout + dtout
             numOut += 1 # So the next output will output to a different file
@@ -115,7 +115,7 @@ def MASTER(nWRs, myID):
         """_____END OF OUTPUTTING_____"""
 
 
-        """_____DONE AT END OF TIMESTEPPING_____"""
+        """_____EXECUTED AT END OF TIMESTEPPING_____"""
         if time >= tEnd:
             print "\nMMr = ", MMr, " MMz = ", MMz
             print "Mr = ", Mr, " Mz = ", Mz

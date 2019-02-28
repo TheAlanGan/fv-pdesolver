@@ -10,7 +10,7 @@ import numpy as np
 def FLUX(RIn, ROut, ZIn, ZOut, R, Z, D, dr, dz, Mr, Mz, Fr, Fz, U, time, Me, nWRs):
 ### Note: U array is flipped
 
-    """_____REAL BOUNDARY CONDITIONS_____"""
+    """_____REAL BOUNDARY CONDITIONS_____""" # Real (not local) boundaries
     if Z[0] == ZIn: # If REAL bottom boudary, apply BC
         U[0, :]    = 0.0         # Bottom Boundary (Dirichlet)
 
@@ -24,7 +24,7 @@ def FLUX(RIn, ROut, ZIn, ZOut, R, Z, D, dr, dz, Mr, Mz, Fr, Fz, U, time, Me, nWR
 
 
 
-    """_____REGULAR FLUXES_____"""
+    """_____REGULAR FLUXES_____""" # Updating the fluxes
 #    for j in range(1, Mz+2):
 #        for i in range(1, Mr+2):
 #            Fr[j, i] = -D * (U[j, i] - U[j, i-1]) /(R[i] - R[i-1])  # Flux in r direction
@@ -48,10 +48,10 @@ def PDE(ZIn, ZOut, R, Z, Ar, Az, dr, dz, Mr, Mz, dt, Fr, Fz, U, time, Me, nWRs):
 
 #            FluxR = Ar[j, i] * Fr[j, i] - Ar[j, i+1] * Fr[j, i+1]
 #            FluxZ = Az[j, i] * Fz[j, i] - Az[j+1, i] * Fz[j+1, i]
-
 #            U[j, i] = U[j, i] + dt * (FluxR + FluxZ) / (2*np.pi*R[i]*dz*dr)
-#            U[j, i] = U[j, i] + dt * (Ar[j, i] * Fr[j, i] - Ar[j, i+1] * Fr[j, i+1] + Az[j, i] * Fz[j, i] - Az[j+1, i] * Fz[j+1, i]) / (2*np.pi*R[i]*dz*dr)
 
+    # Updates cell values using fluxes
     U[1:Mz+1, 1:Mr+1] = U[1:Mz+1, 1:Mr+1] + dt * ( Ar[1:Mz+1, 1:Mr+1] * Fr[1:Mz+1, 1:Mr+1] - Ar[1:Mz+1, 2:Mr+2] * Fr[1:Mz+1, 2:Mr+2] + Az[1:Mz+1, 1:Mr+1] * Fz[1:Mz+1, 1:Mr+1] - Az[2:Mz+2, 1:Mr+1] * Fz[2:Mz+2, 1:Mr+1] ) / (2*np.pi*R[None,1:Mr+1]*dz*dr)
 
     return U
+

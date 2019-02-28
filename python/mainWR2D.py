@@ -47,9 +47,7 @@ def WORKER(nWRs, myID):
     """_____CONVERTING PARAMETERS INTO LOCAL PARAMETERS_____"""
     Mz = Mz / nWRs    # Only decomposing domain in Z direction
 
-#    ZInL  = ZIn + (ZOut-ZIn)/float(nWRs)*float(myID-1)     # ZInL  = ZIn Local
-#    ZOutL = ZOut - (ZOut-ZIn)/float(nWRs)*float(nWRs-myID) # ZOutL = ZOut Local
-# This is for when you specify the TOTAL # of space steps (Mr and Mz) rather than MMr and MMz
+    # Dividing domain acording to which process
     ZInL = ZIn + dz * (myID - 1) * Mz
     ZOutL = ZInL + dz * Mz
 
@@ -81,9 +79,9 @@ def WORKER(nWRs, myID):
 #The Time-stepping
     for nsteps in range(1, MaxSteps + 1):
 
-        MPI.COMM_WORLD.Barrier()
+        MPI.COMM_WORLD.Barrier() # To keep all nodes/processes in sync
 
-        U = ms.EXCHANGE_bry_MPI(nWRs, Me, NodeUP, NodeDN, Mr, Mz, U)
+        U = ms.EXCHANGE_bry_MPI(nWRs, Me, NodeUP, NodeDN, Mr, Mz, U) # Exchanging boundaries with other nodes/processes
 
         """_____THE UPDATING_____"""
         # Need to update time first b/c Boundary Conditions are time dependant
